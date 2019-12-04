@@ -333,6 +333,9 @@ pixel_by_pixel2:
     jmp done
 solve_task3:
     ; TODO Task3
+    
+
+    
     jmp done
 solve_task4:
     ; TODO Task4
@@ -342,6 +345,110 @@ solve_task5:
     jmp done
 solve_task6:
     ; TODO Task6
+    
+    mov eax, [img]
+    xor ecx, ecx
+    xor esi, esi
+    mov ebx, [img_width]
+    sub ebx, 1
+first_line:
+    mov edx,[eax + 4*ecx]
+    push edx
+    ;PRINT_DEC 4,edx
+    ;PRINT_STRING " "
+    inc ecx
+    cmp ecx, ebx
+    jl first_line
+    mov edx,[eax + 4*ecx]
+    push edx
+    ;PRINT_DEC 4,edx
+    inc ecx    
+    ;NEWLINE
+    
+    xor ebx,ebx
+    add ebx,[img_width]
+    mov ecx, ebx
+    sub ebx,1     
+    mov esi, 2
+for_loop:
+    add ebx, [img_width]    
+    inc esi
+    
+    mov edx,[eax + 4*ecx]
+    push edx
+    ;PRINT_DEC 4,edx
+    ;PRINT_STRING " "
+    
+    inc ecx                
+pixel_by_pixel3:
+    mov edx,[eax + 4*ecx]
+    xor edi, edi
+    add edi, [eax + 4*ecx]
+    add edi, [eax + 4*ecx + 4]
+    add edi, [eax + 4*ecx - 4]
+    mov edx, [img_width]
+    add edx, ecx
+    add edi, [eax + edx * 4]
+    sub edx, [img_width]
+    sub edx, [img_width]
+    add edi, [eax + edx * 4]
+    
+    push eax
+    mov eax,edi
+    push ecx
+    mov ecx, 5
+    cdq
+    div ecx
+    pop ecx
+    mov edi,eax
+    pop eax
+    
+    
+    mov edx,[eax + 4*ecx]
+    ;PRINT_DEC 4,edi
+    ;PRINT_STRING " "
+    push edi
+    inc ecx
+    cmp ecx, ebx
+    jl pixel_by_pixel3 
+    
+    mov edx,[eax + 4*ecx]
+    push edx
+    ;PRINT_DEC 4, edx
+    inc ecx
+    ;NEWLINE
+    
+    cmp esi, [img_height]
+    jl for_loop
+    
+    add ebx, [img_width]
+last_line:
+    mov edx,[eax + 4*ecx]
+    push edx
+    ;PRINT_DEC 4,edx
+    
+    ;PRINT_STRING " "
+    inc ecx
+    cmp ecx, ebx
+    jl last_line 
+    
+    mov edx,[eax + 4*ecx]
+    ;PRINT_DEC 4,edx
+    push edx
+    
+overWrite:
+    pop edx
+    mov [eax + 4*ecx],edx
+    dec ecx
+    cmp ecx, 0
+    jge overWrite 
+    
+    push dword[img_height]
+    push dword[img_width]
+    push dword[img]
+    call print_image
+      
+    
     jmp done
 
     ; Free the memory allocated for the image.
