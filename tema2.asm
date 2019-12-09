@@ -1,4 +1,4 @@
-%include "/home/student/iocla-tema2-resurse/include/io.inc"
+%include "include/io.inc"
 
 extern atoi
 extern printf
@@ -26,6 +26,187 @@ section .bss
     img_height: resd 1
 
 section .text
+
+word_search:
+;luam imaginea si pregatim contorul pentru loop
+    mov eax, [img_width]
+    mov ebx, [img_height]
+    mul ebx
+    mov ebx,eax
+    mov eax, [img]
+    xor ecx, ecx
+    xor esi, esi
+;loop ul in care incrementam esi pentru a incerca toate cheile    
+brut_force:
+    inc esi
+    xor ecx,ecx
+;parcurgem imaginea din vector, pixel cu pixel        
+pixel_by_pixel:
+    mov edx,[eax + 4*ecx]
+    ;xoram si verificam dupa 'r'
+    xor edx,esi
+    cmp edx, 'r'
+    je revient
+    inc ecx
+    cmp ecx, ebx
+    jl pixel_by_pixel 
+
+    cmp esi, 255
+    jle brut_force
+    
+    jmp done
+    
+revient:
+;verificam dupa restul cuvantului
+    inc ecx
+    push ecx
+    mov edx,[eax + 4*ecx]
+    xor edx,esi
+    cmp edx, 'e'
+    jne back
+    
+    inc ecx
+    mov edx,[eax + 4*ecx]
+    xor edx,esi
+    
+    cmp edx, 'v'
+    jne back
+    
+    inc ecx
+    mov edx,[eax + 4*ecx]
+    xor edx,esi
+    
+    cmp edx, 'i'
+    jne back
+    
+    inc ecx
+    mov edx,[eax + 4*ecx]
+    xor edx,esi
+    
+    cmp edx, 'e'
+    jne back
+    
+    inc ecx
+    mov edx,[eax + 4*ecx]
+    xor edx,esi
+    
+    cmp edx, 'n'
+    jne back
+    
+    inc ecx
+    mov edx,[eax + 4*ecx]
+    xor edx,esi
+    
+    cmp edx, 't'
+    jne back
+  
+    jmp print_ans
+;inapoi la cautare si la vechiul index
+back:
+    pop ecx
+    jmp pixel_by_pixel
+    
+    leave
+    ret
+
+
+blur_image:
+    push ebp
+    mov ebp, esp
+    
+;pregatire imagine si index    
+    mov eax, [img]
+    xor ecx, ecx
+    xor esi, esi
+    mov ebx, [img_width]
+    sub ebx, 1
+;tratam prima linie separat pentru ca ea ramane la fel    
+first_line:
+    mov edx,[eax + 4*ecx]
+    push edx
+    inc ecx
+    cmp ecx, ebx
+    jl first_line
+    mov edx,[eax + 4*ecx]
+;pusham valorile pentru a reconstrui matricea
+    push edx
+    inc ecx
+    
+    xor ebx,ebx
+    add ebx,[img_width]
+    mov ecx, ebx
+    sub ebx,1     
+    mov esi, 2
+for_loop:
+    add ebx, [img_width]    
+    inc esi
+;primul element de pe linie    
+    mov edx,[eax + 4*ecx]
+    push edx
+    
+    inc ecx                
+pixel_by_pixel3:
+;bluram pixelul adunand 
+    mov edx,[eax + 4*ecx]
+    xor edi, edi
+    add edi, [eax + 4*ecx]
+    add edi, [eax + 4*ecx + 4]
+    add edi, [eax + 4*ecx - 4]
+    mov edx, [img_width]
+    add edx, ecx
+    add edi, [eax + edx * 4]
+    sub edx, [img_width]
+    sub edx, [img_width]
+    add edi, [eax + edx * 4]
+    
+    push eax
+    mov eax,edi
+    push ecx
+    mov ecx, 5
+    cdq
+    div ecx
+    pop ecx
+    mov edi,eax
+    pop eax
+    
+    
+    mov edx,[eax + 4*ecx]
+    push edi
+    inc ecx
+    cmp ecx, ebx
+    jl pixel_by_pixel3 
+;ultimul element    
+    mov edx,[eax + 4*ecx]
+    push edx
+    inc ecx
+    
+    cmp esi, [img_height]
+    jl for_loop
+    
+    add ebx, [img_width]
+    ;si ultima linie
+last_line:
+    mov edx,[eax + 4*ecx]
+    push edx
+    inc ecx
+    cmp ecx, ebx
+    jl last_line 
+    
+    mov edx,[eax + 4*ecx]
+    push edx
+
+    ;parcurgem vectorul imagine invers
+    ;si scriem in el valorile de pe stiva    
+overWrite:
+    pop edx
+    mov [eax + 4*ecx],edx
+    dec ecx
+    cmp ecx, 0
+    jge overWrite 
+    
+    leave
+    ret
+
 
 
 global main
@@ -87,81 +268,9 @@ not_zero_param:
 
 solve_task1:
     
-    ; TODO Task1
-    mov eax, [img_width]
-    mov ebx, [img_height]
-    mul ebx
-    mov ebx,eax
-    mov eax, [img]
-    xor ecx, ecx
-    xor esi, esi
-brut_force:
-    inc esi
-    xor ecx,ecx    
-pixel_by_pixel:
-    mov edx,[eax + 4*ecx]
-    xor edx,esi
-    cmp edx, 'r'
-    je revient
-    inc ecx
-    cmp ecx, ebx
-    jl pixel_by_pixel 
-
-    cmp esi, 255
-    jle brut_force
+call word_search
     
-    jmp done
-    
-revient:
-    inc ecx
-    push ecx
-    mov edx,[eax + 4*ecx]
-    xor edx,esi
-    cmp edx, 'e'
-    jne back
-    
-    inc ecx
-    mov edx,[eax + 4*ecx]
-    xor edx,esi
-    
-    cmp edx, 'v'
-    jne back
-    
-    inc ecx
-    mov edx,[eax + 4*ecx]
-    xor edx,esi
-    
-    cmp edx, 'i'
-    jne back
-    
-    inc ecx
-    mov edx,[eax + 4*ecx]
-    xor edx,esi
-    
-    cmp edx, 'e'
-    jne back
-    
-    inc ecx
-    mov edx,[eax + 4*ecx]
-    xor edx,esi
-    
-    cmp edx, 'n'
-    jne back
-    
-    inc ecx
-    mov edx,[eax + 4*ecx]
-    xor edx,esi
-    
-    cmp edx, 't'
-    jne back
-  
-    jmp print_ans
-
-back:
-    pop ecx
-    jmp pixel_by_pixel
-    
-       
+;dupa ce gasim cuvantul       
 print_ans:
     mov eax, ecx
     mov ebx, [img_width]   
@@ -171,11 +280,12 @@ print_ans:
     mul ebx
     mov ecx,ebx
     mov ebx, [img]
+    ;daca edi este 2 mergem la rezolvarea pentru task2
     cmp edi, 2
     je task2_part2
     
     xor edi, edi
-    
+;printam linia pana la terminator    
 print_loop:
     mov edx, [ebx + eax*4]
     inc eax
@@ -198,7 +308,7 @@ last_print_task1:
 solve_task2:
     ; TODO Task2
     mov edi,2
-    jmp solve_task1
+    call word_search
     
 task2_part2:
     pop eax
@@ -210,6 +320,7 @@ task2_part2:
     mul ebx
     mov ecx,eax
     mov ebx,[img]
+    ;introducerea propozitiei
     ;C'est un proverbe francais.
     mov [ebx + 4*ecx], dword 'C'
     xor [ebx + 4*ecx], esi
@@ -296,7 +407,7 @@ task2_part2:
     mov [ebx + 4*ecx], dword 0
     xor [ebx + 4*ecx], esi
     inc ecx
-    
+    ;calculam noua cheie
     mov eax,esi
     mov ebx,2
     mul ebx
@@ -314,7 +425,7 @@ task2_part2:
     mov eax, [img]
     xor ecx, ecx
     pop edi
-
+;recodam imaginea cu noua cheie
 pixel_by_pixel2:
     mov edx,[eax + 4*ecx]
     xor edx,esi
@@ -345,104 +456,8 @@ solve_task5:
     jmp done
 solve_task6:
     ; TODO Task6
-    
-    mov eax, [img]
-    xor ecx, ecx
-    xor esi, esi
-    mov ebx, [img_width]
-    sub ebx, 1
-first_line:
-    mov edx,[eax + 4*ecx]
-    push edx
-    ;PRINT_DEC 4,edx
-    ;PRINT_STRING " "
-    inc ecx
-    cmp ecx, ebx
-    jl first_line
-    mov edx,[eax + 4*ecx]
-    push edx
-    ;PRINT_DEC 4,edx
-    inc ecx    
-    ;NEWLINE
-    
-    xor ebx,ebx
-    add ebx,[img_width]
-    mov ecx, ebx
-    sub ebx,1     
-    mov esi, 2
-for_loop:
-    add ebx, [img_width]    
-    inc esi
-    
-    mov edx,[eax + 4*ecx]
-    push edx
-    ;PRINT_DEC 4,edx
-    ;PRINT_STRING " "
-    
-    inc ecx                
-pixel_by_pixel3:
-    mov edx,[eax + 4*ecx]
-    xor edi, edi
-    add edi, [eax + 4*ecx]
-    add edi, [eax + 4*ecx + 4]
-    add edi, [eax + 4*ecx - 4]
-    mov edx, [img_width]
-    add edx, ecx
-    add edi, [eax + edx * 4]
-    sub edx, [img_width]
-    sub edx, [img_width]
-    add edi, [eax + edx * 4]
-    
-    push eax
-    mov eax,edi
-    push ecx
-    mov ecx, 5
-    cdq
-    div ecx
-    pop ecx
-    mov edi,eax
-    pop eax
-    
-    
-    mov edx,[eax + 4*ecx]
-    ;PRINT_DEC 4,edi
-    ;PRINT_STRING " "
-    push edi
-    inc ecx
-    cmp ecx, ebx
-    jl pixel_by_pixel3 
-    
-    mov edx,[eax + 4*ecx]
-    push edx
-    ;PRINT_DEC 4, edx
-    inc ecx
-    ;NEWLINE
-    
-    cmp esi, [img_height]
-    jl for_loop
-    
-    add ebx, [img_width]
-last_line:
-    mov edx,[eax + 4*ecx]
-    push edx
-    ;PRINT_DEC 4,edx
-    
-    ;PRINT_STRING " "
-    inc ecx
-    cmp ecx, ebx
-    jl last_line 
-    
-    mov edx,[eax + 4*ecx]
-    ;PRINT_DEC 4,edx
-    push edx
-    
-overWrite:
-    pop edx
-    mov [eax + 4*ecx],edx
-    dec ecx
-    cmp ecx, 0
-    jge overWrite 
-    
+    call blur_image
+    ;printam imaginea dupa blurat
     push dword[img_height]
     push dword[img_width]
     push dword[img]
