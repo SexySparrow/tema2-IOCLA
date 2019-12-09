@@ -1,21 +1,28 @@
-  #IOCLA
-  #TEMA 2 - Stegano
-  #Brabete Adrian - 322CC
+  IOCLA
+  
+  TEMA 2 - Stegano
+  
+  Brabete Adrian - 322CC
+  
 
 Durata Implementare:
-	Implementarea temei a durat 3 zile, astfel ca in prima zii am efectuat 
+
+Implementarea temei a durat 3 zile, astfel ca in prima zii am efectuat 
 task ul 1 si 2, in a doua zi task ul 6, iar in a treia zi am refacut task -ul 1
 si 6 ca sa foloseasca functii si am adaugat comentarii si README
 
 Solutia Implementata:
-	Pentru task-ul 1 am parcurs imaginea pixel cu pixel cautand dupa litera
+
+Pentru task-ul 1 am parcurs imaginea pixel cu pixel cautand dupa litera
 'r', iar apoi folosind o serie de cmp-uri(am inteles din cerinta de la partea
 de precizari ca nu avem voie sa folosim sectiunea de date si din acest motiv
 am hardcodat) verficam daca apare tot cuvantul si in momentul in care in gasesc
-calculez linia pe care se afla si afisez mesajul care a fost codat
-	Pentru task-ul 2 ma folosesc de functia de la 1, adaug propozitia pe
-linia urmatoare si apoi recriptez matricea folosind noua cheie
-	Pentru taskul 6 parcurg matricea imagine (modul de parcurgere este
+calculez linia pe care se afla si afisez mesajul care a fost codat.
+
+Pentru task-ul 2 ma folosesc de functia de la 1, adaug propozitia pe
+linia urmatoare si apoi recriptez matricea folosind noua cheie.
+
+Pentru taskul 6 parcurg matricea imagine (modul de parcurgere este
  explicat in comentari), si fac calculul necear pentru blur. Apoi noile valori
 le pun pe stiva pentru ca la sfarsit sa parcurg din nou in sens invers si sa 
 inlocuiesc cu noile valori.
